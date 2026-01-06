@@ -45,10 +45,16 @@ class UCR(cmd.Cmd):
             elif not self.show_discussions and c["scheduleTypeDescription"] == "Discussion":
                 pass
             else:
-                console.print(f"[bold cyan]{c['courseNumber']}[/bold cyan]\t{c['courseTitle']} [red]{c['scheduleTypeDescription']}[/red]", end=" ")
+                console.print(f"{c['courseNumber']} {c['courseTitle']} {c['scheduleTypeDescription']} {c['enrollment']}/{c['maximumEnrollment']}", end=" ")
                 for f in c["faculty"]:
-                    print(f["displayName"], end=" ")
-                print()
+                    console.print(f"{f['displayName'].split(',')[0]}", end=" ")
+                for m in c["meetingsFaculty"]:
+                    for d, day in (("M", "monday"), ("T", "tuesday"), ("W", "wednesday"), ("R", "thursday"), ("F", "friday")):
+                        if m['meetingTime'][day]:
+                            console.print(d, end="")
+                    console.print(" ", end="")
+                    console.print(f"{m['meetingTime']['beginTime']}-{m['meetingTime']['endTime']}", end=" ")
+                    console.print(f"{m['meetingTime']['building']} {m['meetingTime']['room']}")
     def do_q(self, arg):
         print('GTFO')
         return True
@@ -70,18 +76,8 @@ class UCR(cmd.Cmd):
             self.show_discussions = True
         self.do_l(self)
     def default(self, arg):
-        for c in data["data"]:
-            if c["courseNumber"] == arg:
-                console.print(f"{c['courseNumber']} {c['courseTitle']} {c['scheduleTypeDescription']} {c['enrollment']}/{c['maximumEnrollment']}", end=" ")
-                for f in c["faculty"]:
-                    console.print(f"{f['displayName'].split(',')[0]}", end=" ")
-                for m in c["meetingsFaculty"]:
-                    for d, day in (("M", "monday"), ("T", "tuesday"), ("W", "wednesday"), ("R", "thursday"), ("F", "friday")):
-                        if m['meetingTime'][day]:
-                            console.print(d, end="")
-                    console.print(" ", end="")
-                    console.print(f"{m['meetingTime']['beginTime']}-{m['meetingTime']['endTime']}", end=" ")
-                    console.print(f"{m['meetingTime']['building']} {m['meetingTime']['room']}")
+        pass
+
 
 def parse(self, arg):
     return tuple(map(int, arg.split()))
