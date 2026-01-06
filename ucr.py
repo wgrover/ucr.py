@@ -1,8 +1,3 @@
-# /// script
-# requires-python = ">=3.14"
-# dependencies = ["requests", "rich"]
-# ///
-
 import requests
 import json
 import cmd
