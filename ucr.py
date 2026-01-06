@@ -34,7 +34,7 @@ data = response.json()
 
 
 class UCR(cmd.Cmd):
-    intro = "UCR"
+    intro = "ucr.py"
     prompt = "> "
     show_special_sections = False
     show_discussions = False
@@ -70,8 +70,18 @@ class UCR(cmd.Cmd):
             self.show_discussions = True
         self.do_l(self)
     def default(self, arg):
-        print("I GOT", arg)
-        
+        for c in data["data"]:
+            if c["courseNumber"] == arg:
+                console.print(f"{c['courseNumber']} {c['courseTitle']} {c['scheduleTypeDescription']} {c['enrollment']}/{c['maximumEnrollment']}", end=" ")
+                for f in c["faculty"]:
+                    console.print(f"{f['displayName'].split(',')[0]}", end=" ")
+                for m in c["meetingsFaculty"]:
+                    for d, day in (("M", "monday"), ("T", "tuesday"), ("W", "wednesday"), ("R", "thursday"), ("F", "friday")):
+                        if m['meetingTime'][day]:
+                            console.print(d, end="")
+                    console.print(" ", end="")
+                    console.print(f"{m['meetingTime']['beginTime']}-{m['meetingTime']['endTime']}", end=" ")
+                    console.print(f"{m['meetingTime']['building']} {m['meetingTime']['room']}")
 
 def parse(self, arg):
     return tuple(map(int, arg.split()))
