@@ -1,8 +1,16 @@
 import requests
-import json
 import cmd
-from rich.console import Console
-console = Console()
+
+# Simple ANSI color helper (no rich)
+RESET = '\033[0m'
+COLORS = {
+    'cyan': '\033[36m',
+    'red': '\033[31m',
+    'violet': '\033[35m',
+}
+
+def colorize(text, color):
+    return f"{COLORS.get(color, '')}{text}{RESET}" if color in COLORS else text
 
 BASE_URL = "https://registrationssb.ucr.edu/StudentRegistrationSsb/ssb"
 
@@ -45,16 +53,20 @@ class UCR(cmd.Cmd):
             elif not self.show_discussions and c["scheduleTypeDescription"] == "Discussion":
                 pass
             else:
-                console.print(f"{c['courseNumber']} {c['courseTitle']} {c['scheduleTypeDescription']} {c['enrollment']}/{c['maximumEnrollment']}", end=" ")
+                print(colorize(c['courseNumber'], 'cyan'), end=" ")
+                print(c['courseTitle'], end=" ")
+                print(colorize(c['scheduleTypeDescription'], 'red'), end=" ")
+                print(f"{c['enrollment']}/{c['maximumEnrollment']}", end=" ")
                 for f in c["faculty"]:
-                    console.print(f"{f['displayName'].split(',')[0]}", end=" ")
+                    name = f['displayName'].split(',')[0]
+                    print(colorize(name, 'violet'), end=" ")
                 for m in c["meetingsFaculty"]:
                     for d, day in (("M", "monday"), ("T", "tuesday"), ("W", "wednesday"), ("R", "thursday"), ("F", "friday")):
                         if m['meetingTime'][day]:
-                            console.print(d, end="")
-                    console.print(" ", end="")
-                    console.print(f"{m['meetingTime']['beginTime']}-{m['meetingTime']['endTime']}", end=" ")
-                    console.print(f"{m['meetingTime']['building']} {m['meetingTime']['room']}")
+                            print(d, end="")
+                    print(" ", end="")
+                    print(f"{m['meetingTime']['beginTime']}-{m['meetingTime']['endTime']}", end=" ")
+                    print(f"{m['meetingTime']['building']} {m['meetingTime']['room']}")
     def do_q(self, arg):
         print('GTFO')
         return True
